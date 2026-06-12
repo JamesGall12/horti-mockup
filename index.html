@@ -137,6 +137,25 @@
   .no{color:#C24B4B;font-weight:800}
   .meh{color:var(--muted)}
 
+  /* calculator */
+  .calc-card{display:grid;grid-template-columns:1fr 1.1fr;margin-top:30px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--surface)}
+  .calc-inputs{padding:30px;border-right:1px solid var(--line)}
+  .calc-inputs label{display:block;font-weight:600;font-size:15px;color:var(--ink);margin-bottom:16px}
+  .calc-inputs input{display:block;width:100%;margin-top:6px;font-family:var(--body);font-size:20px;font-weight:700;color:var(--green);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+  .calc-inputs input:focus{border-color:var(--green-2);outline:none}
+  .calc-note{font-size:13px;color:var(--muted);margin:2px 0 0}
+  .calc-result{padding:30px;background:var(--green);color:#EAF1EA;display:flex;flex-direction:column;justify-content:center;gap:16px}
+  .calc-risk{font-size:19px;color:#C4D3C7;margin:0}
+  .big-num{display:block;font-family:var(--display);font-weight:800;font-size:42px;color:#fff;line-height:1.1;margin-top:4px}
+  .calc-bar{position:relative;height:12px;border-radius:8px;background:rgba(255,255,255,.16)}
+  .calc-bar-fill{position:absolute;top:0;bottom:0;left:0;background:var(--plum);border-radius:8px;width:21%;transition:width .25s ease}
+  .calc-legend{display:flex;justify-content:space-between;font-size:13px;color:#A9BCAE;font-weight:600}
+  .calc-legend strong{color:#fff}
+  .calc-line{font-size:16px;color:#D5E1D8;margin:0}
+  .calc-line strong{color:#fff}
+  .calc-result .btn-buy{align-self:flex-start;margin-top:2px}
+  @media (max-width:880px){ .calc-card{grid-template-columns:1fr} .calc-inputs{border-right:none;border-bottom:1px solid var(--line)} }
+
   /* buy */
   .buy{background:var(--green);color:#fff}
   .buy-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
@@ -213,7 +232,7 @@
     <div>
       <div class="eyebrow">For indoor grow rooms</div>
       <h1>Stop mould and bud rot <em>wrecking your harvest.</em></h1>
-      <p class="lede">You're a few weeks out from harvest, the buds are heavy, and a single spore can take the lot. Horti kills powdery mildew and botrytis in the air before they reach your plants, cuts the smell, and runs quietly with you and your plants in the room. Just plug it in.</p>
+      <p class="lede">You're a few weeks out from harvest, the buds are heavy, and a single spore can take the lot. Horti kills powdery mildew and botrytis in the air before they reach your plants, cuts the smell, and runs quietly with you and your plants in the room.</p>
       <div class="hero-cta">
         <a href="#buy" class="btn btn-buy">Buy now — £299</a>
         <a href="#how" class="btn btn-ghost">See how it works</a>
@@ -349,6 +368,36 @@
   </div>
 </section>
 
+<section id="calc" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Do the maths</div>
+      <h2>What's one lost harvest worth to you?</h2>
+    </div>
+    <div class="calc-card">
+      <div class="calc-inputs">
+        <label>Plants
+          <input id="c-plants" type="number" min="1" value="3" inputmode="numeric">
+        </label>
+        <label>Grams per plant
+          <input id="c-grams" type="number" min="1" value="60" inputmode="numeric">
+        </label>
+        <label>Worth per gram, to you (£)
+          <input id="c-value" type="number" min="0" value="8" inputmode="decimal">
+        </label>
+        <p class="calc-note">Your numbers, not ours. Change them to match your grow.</p>
+      </div>
+      <div class="calc-result">
+        <p class="calc-risk">You've got <span class="big-num" id="c-total">£1,440</span> riding on this grow.</p>
+        <div class="calc-bar"><span class="calc-bar-fill" id="c-fill"></span></div>
+        <div class="calc-legend"><span><strong>£299</strong> to protect it</span><span id="c-risklab">£1,440 at risk</span></div>
+        <p class="calc-line">That's about <strong id="c-pct">21%</strong> of a single harvest, and it then guards every grow after this one.</p>
+        <a href="#buy" class="btn btn-buy">Protect my next harvest</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="buy" id="buy">
   <div class="wrap buy-grid">
     <div>
@@ -409,5 +458,24 @@
   </div>
 </footer>
 
+<script>
+(function(){
+  var p=document.getElementById('c-plants'),g=document.getElementById('c-grams'),v=document.getElementById('c-value');
+  var total=document.getElementById('c-total'),pct=document.getElementById('c-pct'),fill=document.getElementById('c-fill'),risklab=document.getElementById('c-risklab');
+  var COST=299;
+  function gbp(n){return '\u00A3'+Math.round(n).toLocaleString('en-GB');}
+  function calc(){
+    var t=(parseFloat(p.value)||0)*(parseFloat(g.value)||0)*(parseFloat(v.value)||0);
+    if(t<=0){total.textContent='\u00A30';risklab.textContent='enter your numbers';fill.style.width='0%';pct.textContent='\u2014';return;}
+    total.textContent=gbp(t);
+    risklab.textContent=gbp(t)+' at risk';
+    var ratio=COST/t*100;
+    fill.style.width=Math.min(100,ratio).toFixed(0)+'%';
+    pct.textContent=Math.round(ratio)+'%';
+  }
+  [p,g,v].forEach(function(el){el.addEventListener('input',calc);});
+  calc();
+})();
+</script>
 </body>
 </html>
